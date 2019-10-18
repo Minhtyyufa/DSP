@@ -9,7 +9,7 @@ f2w = @(f) 2*pi*f;
 w2wproto_BP = @(w, w_o, B) abs((w^2 - w_o^2)/(B*w));
 
 f_s1 = 10^6;
-f_s2 = 1.6*10^5;
+f_s2 = 1.6*10^6;
 f_p1 = 1.2*10^6;
 f_p2 = 1.5*10^6;
 w_p1 = f2w(f_p1);
@@ -38,5 +38,25 @@ n_bp_chev = 2*n_lp_chev;
 
 %%
 % (c)
-[n_b, Wn_b] = buttord(w_p, min(w_s_lp1, w_s_lp2), r_p, r_s, 's');
-[z_b, p_b, k_b] = butter(n, Wn, 's');
+% do rest
+clc;
+[n_b, Wn_b] = buttord([w_p1 w_p2], [w_s1 w_s2], r_p, r_s, 's');
+[z_b, p_b, k_b] = butter(n_b, Wn_b, 's');
+[n_c1, Wn_c1] = cheb1ord([w_p1 w_p2], [w_s1 w_s2], r_p, r_s, 's');
+[z_c1, p_c1, k_c1] = cheby1(n_c1, r_p, [w_p1 w_p2], 's');
+%%
+% (d)
+% do rest
+zplane(z_b, p_b);
+[z_c1, p_c1, k_c1] = butter(n_c1, Wn_c1, 's');
+%%
+% (e)
+
+%%
+% (f)
+w = 0:100:f2w(3*10^6);
+[b_b, a_b] = zp2tf(z_b, p_b, k_b);
+figure;
+freqs(b_b, a_b, w)
+
+% [h_b, w_out_ b] = freqs(b_b, a_b, w);
