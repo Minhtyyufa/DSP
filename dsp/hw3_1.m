@@ -38,25 +38,68 @@ n_bp_chev = 2*n_lp_chev;
 
 %%
 % (c)
-% do rest
 clc;
 [n_b, Wn_b] = buttord([w_p1 w_p2], [w_s1 w_s2], r_p, r_s, 's');
 [z_b, p_b, k_b] = butter(n_b, Wn_b, 's');
 [n_c1, Wn_c1] = cheb1ord([w_p1 w_p2], [w_s1 w_s2], r_p, r_s, 's');
 [z_c1, p_c1, k_c1] = cheby1(n_c1, r_p, [w_p1 w_p2], 's');
+[n_c2, Wn_c2] = cheb2ord([w_p1 w_p2], [w_s1 w_s2], r_p, r_s, 's');
+[z_c2, p_c2, k_c2] = cheby2(n_c2, r_s, [w_s1 w_s2], 's');
+[n_e, Wn_e] = ellipord([w_p1 w_p2], [w_s1 w_s2], r_p, r_s, 's');
+[z_e, p_e, k_e] = ellip(n_e, r_p, r_s, [w_p1 w_p2], 's');
 %%
 % (d)
 % do rest
+close all;
+figure;
+subplot(2, 2, 1);
 zplane(z_b, p_b);
-[z_c1, p_c1, k_c1] = butter(n_c1, Wn_c1, 's');
+title('butterworth');
+
+subplot(2, 2, 2);
+zplane(z_c1, p_c1);
+title('cheby1');
+
+subplot(2, 2, 3);
+zplane(z_c2, p_c2);
+title('cheby2');
+
+subplot(2, 2, 4);
+zplane(z_e, p_e);
+title('ellip');
+
+%[z_c1, p_c1, k_c1] = butter(n_c1, Wn_c1, 's');
 %%
 % (e)
-
+close all;
+[n_e_lp, Wn_e_lp] = ellipord(w_p, min([w_s_lp1 w_s_lp2]), r_p, r_s, 's');
+[z_e_lp, p_e_lp, k_e_lp] = ellip(n_e_lp, r_p, r_s, min([w_s_lp1 w_s_lp2]), 's');
+figure;
+zplane(z_e_lp, p_e_lp);
 %%
 % (f)
-w = 0:100:f2w(3*10^6);
-[b_b, a_b] = zp2tf(z_b, p_b, k_b);
-figure;
-freqs(b_b, a_b, w)
+clc; close all;
+[H_b, w_b] = plot_analog(z_b, p_b, k_b, 'butter');
+[H_c1, w_c1] = plot_analog(z_c1, p_c1, k_c1, 'cheb1');
+[H_c2, w_c2] = plot_analog(z_c2, p_c2, k_c2, 'cheb2');
+[H_e, w_e] = plot_analog(z_e, p_e, k_e, 'ellip');
 
-% [h_b, w_out_ b] = freqs(b_b, a_b, w);
+%%
+% (g)
+figure;
+plot(w_b, H_b, w_c1, H_c1, w_c2, H_c2, w_e, H_e);
+legend("butterworth", "cheby1", "cheby2", "ellip");
+xlim([w_p1, w_p2]);
+title("zoomed in to magnitude response");
+
+%%
+% (h)
+isb = find(w_b> w_s2, 1);
+r_s_b = max(H_b(isb:end));
+isc1 = find(w_c1> w_s2, 1);
+r_s_c1 = max(H_c1(isc1:end));
+isc2 = find(w_c2> w_s2, 1);
+r_s_c2 = max(H_c2(isc2:end));
+ise = find(w_e> w_s2, 1);
+r_s_e = max(H_e(ise:end));
+
