@@ -1,5 +1,4 @@
-function [magH, f] = plot_digital(z, p, k, n, fs, t)
-    [b, a] = zp2tf(z, p, k);
+function [magH, f] = plot_digital2(b, a, n, fs, t)
     [H, f] = freqz(b, a, n, fs);
     figure;
     sgtitle(t);
@@ -14,5 +13,4 @@ function [magH, f] = plot_digital(z, p, k, n, fs, t)
     title('Magnitude Response');
     xlabel("Frequency (MHz)")
     ylabel("Magnitude (dB)")
-    ylim([-100 ,0])
 end

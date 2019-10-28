@@ -1,5 +1,4 @@
 clear all; clc; close all;
-
 %% Part A
 r_s2sig_s = @(r_s) 10^(-r_s/20);
 r_p2sig_p = @(r_p) (10^(r_p/20)-1)/(10^(r_p/20)+1);
@@ -22,14 +21,22 @@ b_pm = firpm(n_pm, f_pm, a_pm,w_pm);
 [H_pm, f_pm]  = freqz(b_pm, 1,1024,sample_freq);
  
 %% b
-impz(b_k,1);
-impz(b_pm, 1);
+[h_k t_k] = impz(b_k,1);
+[h_pm t_pm] = impz(b_pm, 1);
+plot_impulse(h_k, t_k, 'Kaiser');
+plot_impulse(h_pm, t_pm, 'Parks-McClellan');
+
+
 plotter(f_k, H_k, 'Kaiser');
 plotter(f_pm, H_pm, 'Parks-McClellan');
 
 %% c
+% check_specs returns 0 if specs are not met and 1 if specs are met;
 
+% For Kaiser
 k_spec = check_specs(f_k, H_k)
+
+% For Parks-McClellan
 pm_spec = check_specs(f_pm, H_pm)
 
 %% d
@@ -66,10 +73,18 @@ function plotter(f, H, g_title)
 
     title(g_title);
 end
+function plot_impulse(h, t, my_title)
+    figure
+    stem(t, h)
+    title(my_title)
+end
 
 function check = check_specs(f, H)
-    h = 20*log10(H);
+    h = 20*log10(abs(H));
     pass = find((f > 1.2*10^6) & (f < 1.5*10^6));
     stop = find((f < 1*10^6) | (f > 1.6*10^6));
-    check = any(h(pass) > 2) | any(h(pass) < -2) | any(h(stop) > -30);
+    
+    pass_band_max_ripple = max(abs(h(pass)))
+    stop_band_min_atten = min(abs(h(stop)))
+    check = ~(any(h(pass) > 2) | any(h(pass) < -2) | any(h(stop) > -30));
 end
