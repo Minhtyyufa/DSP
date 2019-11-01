@@ -71,7 +71,7 @@ function plotter(f, H, g_title)
     title(g_title);
 end
 
-% returns 1 if specks are met
+% returns 1 if specs are met
 function check = check_specs(f, H)
 
     h = 20*log10(abs(H));
