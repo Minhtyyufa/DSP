@@ -48,6 +48,13 @@ k_spec = check_specs(f_k, H_k)
 % The Parks-McClellan doesn't meet specs at n = 58. It has a peak at
 % -29.9748 dB in the passband.
 pm_spec = check_specs(f_pm, H_pm)
+
+% The Parks-McClellan meets specs at n = 60. 
+[n_pm, f_pm, a_pm, w_pm] = firpmord(f_cut, mags, dev, sample_freq);
+b_pm = firpm(4+n_pm, f_pm, a_pm,w_pm);
+[H_pm, f_pm]  = freqz(b_pm, 1,512,sample_freq);
+pm_spec = check_specs(f_pm, H_pm)
+
 plotter(f_k, H_k, 'Kaiser 2n');
 plotter(f_pm, H_pm, 'Parks-McClellan 2n');
 %% Functions
