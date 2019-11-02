@@ -84,6 +84,5 @@ function check = check_specs(f, H)
     h = 20*log10(abs(H));
     pass = find((f > 1.2*10^6) & (f < 1.5*10^6));
     stop = find((f < 1*10^6) | (f > 1.6*10^6));
-    max(h(stop))
     check = ~(any(h(pass) > 2) | any(h(pass) < -2) | any(h(stop) > -30));
 end
